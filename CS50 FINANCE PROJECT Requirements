@@ -1,0 +1,86 @@
+CS50 FINANCE PROJECT
+
+#1 [X]	Register
+	[x]	Create registration form
+		[x] Username
+			[x]	Should be created as an entry field
+			[x]	Name this field: username 
+			
+		[x]	password - entry field
+			[x]	Should be created as an entry field
+			[x]	Name this field: password 
+
+		[x]	confirm password
+			[x]	Should be created as an entry field
+			[x]	Name this field: confirmation 
+
+		[x]	Register button - Button
+
+	[X]	Create a new template: register.htm
+		-> Similar to login.html
+
+	[X]	Submit the user’s input via POST to /register
+
+	[X]	Verify user's details
+		[x]	Make sure the username field isn't empty
+			[x]	If so: provide error message
+
+		[ ]	check username against DB
+			[ ]	Provide error if Username already exists in the DB
+
+		[x]	Make sure the password field isn't empty
+			[x]	If empty: provide error message
+
+		[x]	Make sure the password confirmation field isn't empty
+			[x]	If empty: provide error message
+
+		[x]	Make sure the password and password confirmation fields match
+			[x]	If not: provide error message
+
+	[X]	INSERT the new user into users (table)
+		[X]	Store a hash of the user’s password 
+			(Hash the user’s password with generate_password_hash)
+
+	[X]	Should display form - when requested via GET
+
+	[X]	Test the Login & logout functions
+		[X]	Register a user successfully
+		[X]	The user has been added to DB Successfully
+		[X]	Log out user successfully (user gets redirected to the login page)
+
+------------------------------------------------------------------------------
+
+#2 [X]	Quote - it should allow a user to look up a stock’s current price.
+	[X] Create the quote template (form) 
+		[X]	Create a text field -> name: symbol.
+		[X]	Create a button -> Submit 
+		[X]	When the get request is called, the user should see the form
+
+	[X]	Set up the route to accept both GET and POST methods
+
+	[X]	Create the "quoted" template - this template will display results from lookup()
+
+	[X]	POST 
+		[X]	Call on lookup() with the value of "symbol" input field
+		[X]	Save the results of this lookup() request into a variable
+		[X] Catch the error if lookup() returns None
+		[X]	Display the input to user -> to "quoted.html"
+
+	
+------------------------------------------------------------------------------
+	
+#3	[ ] 
+
+
+
+
+
+#3 [ ]	Buy
+
+#4 [ ]	Index
+
+#5 [ ]	Sell
+
+#6 [ ]	History
+
+#7 [ ]	Personal Touch

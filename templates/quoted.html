@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+    <h1> Your Quote for {{ web_data.symbol }} </h1> 
+    
+    <table class="center">
+        <tr>
+            <th> Stock Symbol</th>
+            <th> Company Name</th>
+            <th> Stock Price</th>
+
+        </tr>
+            <td>{{ web_data.symbol }}</td>
+            <td>{{ web_data.name }}</td>
+            <td>{{ web_data.price }}</td>
+        </tr>
+    </table>
+    
+    <!-- {{ web_data.symbol }}   | {{ web_data.name }} | {{ web_data.price }} -->
+
+{% endblock %}
