@@ -49,30 +49,30 @@ def index():
 
     # Let's first grab the current user's personal info from 'users'
     user_id = session["user_id"]
-    # users_account = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=user_id)
-    # balance = users_account[0]["cash"]
-
-    portfolio = db.execute("SELECT user_id, name, symbol, cash, shares FROM portfolio INNER JOIN users ON users.id = portfolio.user_id WHERE user_id = :user_id", user_id=user_id)
+    users_portfolio = db.execute("SELECT user_id, name, symbol, cash, shares FROM portfolio INNER JOIN users ON users.id = portfolio.user_id WHERE user_id = :user_id", user_id=user_id)
 
     symbol = ""
     balance = 0
     portfolio_info = {}
+    purchase_id = 0
 
-    for i in portfolio:
+    for i in users_portfolio:
         if i["user_id"] == user_id:
+            purchase_id += 1
+            portfolio_info[purchase_id] = {}
             symbol = i["symbol"]
             balance = round(float(i["cash"]), 2)
             shares = int(i["shares"])
             stock_current_value = int(lookup(symbol)["price"])
             total_value = round(stock_current_value * shares, 2)
 
-            portfolio_info["balance"] = usd(balance)
-            portfolio_info["symbol"] = symbol
-            portfolio_info["name"] = i["name"]
-            portfolio_info["shares"] = shares
-            portfolio_info["stock_current_value"] = usd(stock_current_value)
-            portfolio_info["total_value"] = usd(total_value)
-            portfolio_info["grand_total"] = usd(balance + total_value)
+            portfolio_info[purchase_id]["balance"] = usd(balance)
+            portfolio_info[purchase_id]["symbol"] = symbol
+            portfolio_info[purchase_id]["name"] = i["name"]
+            portfolio_info[purchase_id]["shares"] = shares
+            portfolio_info[purchase_id]["stock_current_value"] = usd(stock_current_value)
+            portfolio_info[purchase_id]["total_value"] = usd(total_value)
+            portfolio_info[purchase_id]["grand_total"] = usd(balance + total_value)
 
     return render_template("index.html", portfolio_info=portfolio_info)
 
@@ -94,17 +94,17 @@ def buy():
         if shares == '':
             return apology(message="You have no specified how many shares you'd like to buy.")
         
-        elif int(shares) < 1: 
+        elif int(purchased_shares) < 1: 
             return apology(message="You cannot purchase less than 1 stock.")
 
-        shares = int(shares)
+        purchased_shares = int(shares)
         stocks = lookup(symbol)
         if stocks == None:
             return apology(message="Not a valid Stock symbol!")
 
         price = float(stocks["price"])
         company_name = stocks["name"]
-        purchase_value = price * int(shares)
+        purchase_value = price * int(purchased_shares)
         user_id = session["user_id"]
 
         rows = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=user_id)
@@ -120,17 +120,28 @@ def buy():
         trans_date = date.today()
 
         portfolio = db.execute("SELECT user_id, symbol, shares FROM portfolio WHERE user_id = :user_id and symbol = :symbol", user_id=user_id, symbol=symbol)
-        if len(portfolio) > 0:
-            shares += int(portfolio[0]["shares"])
+        if len(portfolio) == 0:
+            account_shares = 0
 
-        db.execute("INSERT INTO portfolio (user_id, name, symbol, shares) VALUES (:user_id, :name, :symbol, :shares)", user_id=user_id, name=company_name, symbol=symbol, shares=shares);
+        else:
+            account_shares = portfolio[0]["shares"]
+
+        shares = int(account_shares) + purchased_shares
+
+        if len(portfolio) > 0:
+            result = db.execute("UPDATE portfolio SET shares = :shares WHERE user_id = :user_id AND symbol = :symbol", shares=shares, user_id=user_id, symbol=symbol);
+            # raise ValueError("here", result)
+        else:
+            db.execute("INSERT INTO portfolio (user_id, name, symbol, shares) VALUES (:user_id, :name, :symbol, :shares)", user_id=user_id, name=company_name, symbol=symbol, shares=shares);
+            
+        
         db.execute("INSERT INTO history (user_id, symbol, stock_price, purchase_value, date) VALUES (:user_id, :symbol, :price, :purchase_value, :date)", user_id=user_id, symbol=symbol, price=price, purchase_value=purchase_value, date=trans_date);
         db.execute("UPDATE users SET cash = :balance WHERE id = :user_id", balance=final_balance, user_id=user_id);
 
         stock_purchase_info = { 
             "symbol": symbol,
             "name": stocks["name"],
-            "shares" : shares, 
+            "shares" : purchased_shares, 
             "price": usd(price), 
             "purchase_value": purchase_value_str, 
             "id": session["user_id"],
@@ -142,6 +153,33 @@ def buy():
 
     return render_template("bought.html", web_data=stock_purchase_info)    
 
+
+@app.route("/sell", methods=["GET", "POST"])
+@login_required
+def sell():
+    if request.method == "GET":
+        user_id = session["user_id"]
+        rows = db.execute("SELECT * FROM portfolio WHERE user_id = :user_id", user_id=user_id)
+
+        if len(rows) == 0:
+            return apology("You do not own stock yet at this point")
+    
+        stocks_purchased = []
+        for i in range(len(rows)):
+            stock_item = rows[i]
+            for key, value in stock_item.items():
+                if key == "symbol":
+                    stocks_purchased.append(value)
+            #     
+        raise ValueError(stocks_purchased)  
+        
+        
+
+
+        return render_template("sell.html")
+
+
+    return apology("TODO")
 
 
 @app.route("/history")
@@ -278,11 +316,7 @@ def register():
 
 
 
-@app.route("/sell", methods=["GET", "POST"])
-@login_required
-def sell():
-    """Sell shares of stock"""
-    return apology("TODO")
+
 
 
 def errorhandler(e):

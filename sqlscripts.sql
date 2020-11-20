@@ -17,7 +17,7 @@ VALUES (user_id, symbol, price, purchase_value)",
 /* 2, 2, Apple Inc., AAPL, 2 */
 
 CREATE TABLE 'portfolio' (
-    'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+    'id' INTEGER PRIMARY KEY AUTOINCREMENT, 
     'user_id' INTEGER NOT NULL, 
     'name' TEXT NOT NULL,
     'symbol' TEXT NOT NULL, 
@@ -30,4 +30,8 @@ ON "portfolio" ("id");
 
 SELECT * FROM portfolio INNER JOIN users ON users.id = portfolio.user_id WHERE id = :user_id", user_id=user_id)
 
+DELETE FROM  portfolio  where  id = 1;
 
+INSERT INTO portfolio (user_id, name, symbol, shares) VALUES (4, "Apple, Inc.", "AAPL", 2);
+
+DELETE FROM table_name WHERE condition;

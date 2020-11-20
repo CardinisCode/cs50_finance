@@ -19,37 +19,14 @@
 
         </tr>
 
-        <tr class="border-bottom">
-            <td> {{ portfolio_info["balance"] }} </td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td>  </td>
-            <td></td>
-
-        </tr>
-
-        <tr class="border-bottom">
-            <td> </td>
-            <td> {{ portfolio_info["symbol"] }}</td>
-            <td> {{ portfolio_info["name"] }}</td>
-            <td> {{ portfolio_info["shares"] }}</td>
-            <td> {{ portfolio_info["stock_current_value"] }}</td>
-            <td> {{ portfolio_info["total_value"] }}</td>
-            <td></td>
-        </tr>
-
-        <tr class="border-bottom">
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td> {{ portfolio_info["grand_total"] }} </td>
-
-        </tr>
+        {% for key, value in portfolio_info.items() %}
+            <tr class="border-bottom">
+                {% for key2, value2 in value.items() %}
+                    <td> {{value2 }} </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        
 
         <!-- portfolio_info[i] = {
             "symbol": symbol, 

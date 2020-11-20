@@ -96,6 +96,13 @@ CS50 FINANCE PROJECT
 			[X]	Update user's balance (in user table)
 			[X]	Grab the date of purchase
 			[X]	Insert payment details into new table
+			[X] If user has stocks of that type
+				Insert the purchased stock into the user's portfolio
+					[ ]	shares
+					[ ]	symbol
+					[ ] company name
+			[X]	If user already stocks of that type:
+				[X]	Update the amount of shares that user owns for that symbol
 
 		[X] Catching Errors 
 			[x]	symbol input field is blank
@@ -131,38 +138,39 @@ CS50 FINANCE PROJECT
 #4	[ ] Display a HTML table on INDEX summarising the user's stocks
 		(For the current user logged in)
 
-		[ ]	Grab info
-			[ ]	which stocks current user owns
-			[ ]	For each stock item, grab: 
-				[ ]	No. of shares for this stock
-				[ ]	Current price of this stock
-					[ ]	Look up current price using lookup()
+		[X]	Grab info
+			[X]	which stocks current user owns
+			[X]	For each stock item, grab: 
+				[X]	No. of shares for this stock
+				[X]	Current price of this stock
+					[X]	Look up current price using lookup()
 			
 			[X] Users current cash balance 
 				[X]	SQL query into 'user' table
 			
 
-		[ ]	Calculate: 
-			[ ]	Total value of each holding 
+		[X]	Calculate: 
+			[X]	Total value of each holding 
 				(shares * price)
-			[ ]	Grand total 
+			[X]	Grand total 
 				(stocks total value + cash)
 
-
-		[ ] Include in table: 
-			[ ]	which stocks the user owns
-			[ ]	No. of shares
-			[ ]	current price of each stock
-			[ ]	Total value of each holding 	
-			[ ] Users current cash balance 
-			[ ] Grand total
+		[X] Include in table: 
+			[X]	which stocks the user owns
+			[X]	No. of shares
+			[X]	current price of each stock
+			[X]	Total value of each holding 	
+			[X] Users current cash balance 
+			[X] Grand total
 				
-	[ ]	Added a link for the Home page on the top nav bar
-		[ ]	Connected the link to "/"
+	[X]	Added a link for the Home page on the top nav bar
+		[X]	Connected the link to "/"
 
 ------------------------------------------------------------------------------
 
 #5 [ ]	Sell
+
+
 
 #6 [ ]	History
 
