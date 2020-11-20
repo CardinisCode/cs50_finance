@@ -5,14 +5,18 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/sell" method="POST">
-        <select name="symbol" id="stocks">
-            <option value="select_stock">Select Stock</option>
-            
 
+
+    <form action="/sell" method="POST">
+        <select name="symbol" id="stocks"> 
+            <option value="select_symbol" disabled> Select Stock</option>
+            {% for value in stocks_purchased.values() %}
+                <option value="{{ value }}">{{ value }}</option>
+            {% endfor %}
           </select>
+
         <div class="form-group">
-            <input class="form-control" name="shares" placeholder="Shares" type="text">
+            <input class="form-control" name="shares" placeholder="Shares QTY" type="text">
         </div>
 
         <button class="btn btn-primary" type="submit">Sell</button>

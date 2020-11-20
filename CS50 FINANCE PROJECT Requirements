@@ -168,8 +168,48 @@ CS50 FINANCE PROJECT
 
 ------------------------------------------------------------------------------
 
-#5 [ ]	Sell
+#5 [ ]	Sell (allows user to sell stocks that they currently own)
+	[X]	GET (FORM): 
+		[x]	symbol -> Select menu
+			-> Should include all the stocks that the user currently owns
+		[X] Shares -> input field
+		[X]	Sell -> submit Button
 
+	[ ]	POST
+		[X]	save share symbol & shares qty in variables
+		[X] create & save a lookup request using provided stock symbol
+			[X] Grab the stock's current value
+		[ ] Gather relevant info from users and portfolio
+			[ ] from 'users' table, Grab:
+				[ ] balance 
+			[ ]	From 'portfolio', Grab:
+				[ ]	all
+
+
+		[ ]	Update the portfolio for this user: 
+			[ ]	Shares owned
+				[ ] If user sold all of their shares of their stock	
+					->	delete that entry from the 'portfolio' table for that user
+		[ ]	Add the sale into the history table
+		[ ] Update user's balance after purchase
+
+
+	[ ] Handle errors (render Apology) if:
+		[ ]	User doesn't select a stock
+		[ ] User doesn't own any shares of that stock
+		[ ]	User input into shares is not a positive value
+		[ ]	User Input into shares is higher than the number of shares that user owns
+
+
+	[ ] Prepare info to displayed to user
+		[ ] Create a template for "sold" 
+		[ ]	Copy data from "bought.html" & modify it accordingly
+		[ ]	Prepare dict for items to be displayed to the screen
+		[ ]	Create a banner to display "Sold"
+		
+
+
+	------------------------------------------------------------------------------
 
 
 #6 [ ]	History

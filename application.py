@@ -157,26 +157,35 @@ def buy():
 @app.route("/sell", methods=["GET", "POST"])
 @login_required
 def sell():
+    user_id = session["user_id"]
     if request.method == "GET":
-        user_id = session["user_id"]
         rows = db.execute("SELECT * FROM portfolio WHERE user_id = :user_id", user_id=user_id)
 
+        # Let's make sure the user actually owns any stocks
         if len(rows) == 0:
             return apology("You do not own stock yet at this point")
     
-        stocks_purchased = []
+        # Let's grab every stock symbol in the user's portfolio and save it in a dictionary
+        stocks_purchased = {}
         for i in range(len(rows)):
             stock_item = rows[i]
             for key, value in stock_item.items():
                 if key == "symbol":
-                    stocks_purchased.append(value)
+                    stocks_purchased[i] = value
             #     
-        raise ValueError(stocks_purchased)  
-        
-        
+        return render_template("sell.html", stocks_purchased=stocks_purchased)
 
+    # Process POST request
+    symbol = request.form.get("symbol")
+    shares = int(request.form.get("shares"))
+    stocks = lookup(symbol)
+    price = float(stocks["price"])
 
-        return render_template("sell.html")
+    rows = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=user_id)
+    balance = float(rows[0]["cash"])
+
+    portfolio = db.execute("SELECT user_id, symbol, shares FROM portfolio WHERE user_id = :user_id and symbol = :symbol", user_id=user_id, symbol=symbol)
+    # Grab the info needed: shares qty, symbol, name -> for loop through portfolio
 
 
     return apology("TODO")
