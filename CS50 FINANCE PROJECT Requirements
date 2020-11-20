@@ -68,16 +68,99 @@ CS50 FINANCE PROJECT
 
 	
 ------------------------------------------------------------------------------
-	
-#3	[ ] 
+
+#3	[ ] Buy - Should allow user to buy stock of their choice
+		[x]	Templates
+			[X]	Create a "buy.html" template
+			[X]	Create a "bought.html" template
+
+		[X]	GET Request method (form)
+			[X]	Create text field: symbol
+			[X]	Create text field: shares
+			[X]	Create button: Buy
+
+		[X]	Create route for "buy.html" 
+		[X] Create route for "bought.html" 
+
+		[X]	POST request method (processing payment)
+			[X]	save user input in variables
+			[X]	create & save a lookup request using provided stock symbol
+			[X]	Save users (unique) ID
+			[X]	Save the stock's current price
+			[X]	check the user's current balance (using SQL query)
+			[X]	Calculate the total value of user's purchase
+			[X]	Check if user can afford the purchase
+			[X]	payment is done -> redirect user to "bought.html"
+			[X]	display table of user's purchase/s
+			[X]	Insert purchase details into new table
+			[X]	Update user's balance (in user table)
+			[X]	Grab the date of purchase
+			[X]	Insert payment details into new table
+
+		[X] Catching Errors 
+			[x]	symbol input field is blank
+			[X]	shares input field is blank
+			[X]	shares input field is not a positive integer
+			[X]	user doesn't provide a valid stock symbol
+			[X]	user cannot afford the quantity & type of stock requested
 
 
+		[X]	Create a new table in finance.db to store user's purchases 'history'
+			[X]	Columns: 
+				[X]	Purchase ID - INTEGER (Incremental)
+				[X]	User ID (from users)
+				[X]	stock symbol (text)
+				[X]	current price (of stock) - float
+				[X]	Total purchase value - float
+				[X]	Date of purchase - date
+			[X]	CREATE UNIQUE INDEX (Purchase ID)
+
+		[X]	Create a new table 'history' in finance.db to store users' stocks purchased overall 
+			[X]	Columns: 
+				[X]	ID - INTEGER (Incremental)
+				[X]	User ID (from users) - INT
+				[X]	company name - TEXT
+				[X]	stock symbol (text) - INT
+				[X]	shares (QTY) - INT
+			[X]	CREATE UNIQUE INDEX (ID)
+
+		[X]	Update the user's table when buying / selling stocks
+
+------------------------------------------------------------------------------
+
+#4	[ ] Display a HTML table on INDEX summarising the user's stocks
+		(For the current user logged in)
+
+		[ ]	Grab info
+			[ ]	which stocks current user owns
+			[ ]	For each stock item, grab: 
+				[ ]	No. of shares for this stock
+				[ ]	Current price of this stock
+					[ ]	Look up current price using lookup()
+			
+			[X] Users current cash balance 
+				[X]	SQL query into 'user' table
+			
+
+		[ ]	Calculate: 
+			[ ]	Total value of each holding 
+				(shares * price)
+			[ ]	Grand total 
+				(stocks total value + cash)
 
 
+		[ ] Include in table: 
+			[ ]	which stocks the user owns
+			[ ]	No. of shares
+			[ ]	current price of each stock
+			[ ]	Total value of each holding 	
+			[ ] Users current cash balance 
+			[ ] Grand total
+				
+	[ ]	Added a link for the Home page on the top nav bar
+		[ ]	Connected the link to "/"
 
-#3 [ ]	Buy
-
-#4 [ ]	Index
+------------------------------------------------------------------------------
 
 #5 [ ]	Sell
 

@@ -9,6 +9,7 @@ from werkzeug.exceptions import default_exceptions, HTTPException, InternalServe
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import apology, login_required, lookup, usd
+from datetime import datetime, date
 
 # Configure application
 app = Flask(__name__)
@@ -45,14 +46,102 @@ if not os.environ.get("API_KEY"):
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return apology("TODO")
+
+    # Let's first grab the current user's personal info from 'users'
+    user_id = session["user_id"]
+    # users_account = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=user_id)
+    # balance = users_account[0]["cash"]
+
+    portfolio = db.execute("SELECT user_id, name, symbol, cash, shares FROM portfolio INNER JOIN users ON users.id = portfolio.user_id WHERE user_id = :user_id", user_id=user_id)
+
+    symbol = ""
+    balance = 0
+    portfolio_info = {}
+
+    for i in portfolio:
+        if i["user_id"] == user_id:
+            symbol = i["symbol"]
+            balance = round(float(i["cash"]), 2)
+            shares = int(i["shares"])
+            stock_current_value = int(lookup(symbol)["price"])
+            total_value = round(stock_current_value * shares, 2)
+
+            portfolio_info["balance"] = usd(balance)
+            portfolio_info["symbol"] = symbol
+            portfolio_info["name"] = i["name"]
+            portfolio_info["shares"] = shares
+            portfolio_info["stock_current_value"] = usd(stock_current_value)
+            portfolio_info["total_value"] = usd(total_value)
+            portfolio_info["grand_total"] = usd(balance + total_value)
+
+    return render_template("index.html", portfolio_info=portfolio_info)
 
 
 @app.route("/buy", methods=["GET", "POST"])
 @login_required
 def buy():
-    """Buy shares of stock"""
-    return apology("TODO")
+    """Display form to user"""
+    if request.method == "GET":
+        return render_template("buy.html")
+
+    else:
+        """Buy shares of stock"""
+        symbol = request.form.get("symbol")
+        if symbol == '':
+            return apology(message="No stock symbol provided!")
+
+        shares = request.form.get("shares")
+        if shares == '':
+            return apology(message="You have no specified how many shares you'd like to buy.")
+        
+        elif int(shares) < 1: 
+            return apology(message="You cannot purchase less than 1 stock.")
+
+        shares = int(shares)
+        stocks = lookup(symbol)
+        if stocks == None:
+            return apology(message="Not a valid Stock symbol!")
+
+        price = float(stocks["price"])
+        company_name = stocks["name"]
+        purchase_value = price * int(shares)
+        user_id = session["user_id"]
+
+        rows = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=user_id)
+        balance = float(rows[0]["cash"])
+
+        final_balance = balance - purchase_value
+
+        if final_balance < 0:
+            return apology("You do not have sufficient balance for this transaction.")
+
+        purchase_value_str = "- " + str(usd(purchase_value))
+
+        trans_date = date.today()
+
+        portfolio = db.execute("SELECT user_id, symbol, shares FROM portfolio WHERE user_id = :user_id and symbol = :symbol", user_id=user_id, symbol=symbol)
+        if len(portfolio) > 0:
+            shares += int(portfolio[0]["shares"])
+
+        db.execute("INSERT INTO portfolio (user_id, name, symbol, shares) VALUES (:user_id, :name, :symbol, :shares)", user_id=user_id, name=company_name, symbol=symbol, shares=shares);
+        db.execute("INSERT INTO history (user_id, symbol, stock_price, purchase_value, date) VALUES (:user_id, :symbol, :price, :purchase_value, :date)", user_id=user_id, symbol=symbol, price=price, purchase_value=purchase_value, date=trans_date);
+        db.execute("UPDATE users SET cash = :balance WHERE id = :user_id", balance=final_balance, user_id=user_id);
+
+        stock_purchase_info = { 
+            "symbol": symbol,
+            "name": stocks["name"],
+            "shares" : shares, 
+            "price": usd(price), 
+            "purchase_value": purchase_value_str, 
+            "id": session["user_id"],
+            "user_name": rows[0]["username"],
+            "balance": usd(balance),
+            "final": usd(final_balance),
+            "date": trans_date
+        }
+
+    return render_template("bought.html", web_data=stock_purchase_info)    
+
 
 
 @app.route("/history")

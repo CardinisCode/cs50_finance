@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+    <h1> Your Stock Portfolio</h1>
+        
+    <table class="center">
+        <tr class="border-bottom">
+            <th> Current Balance</th>
+            <th> Stock Symbol</th>
+            <th> Company Name</th>
+            <th> No. of Shares</th>
+            <th> Current Stock Price</th>
+            <th> Total Value</th>
+            <th> Grand Total</th>
+
+        </tr>
+
+        <tr class="border-bottom">
+            <td> {{ portfolio_info["balance"] }} </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>  </td>
+            <td></td>
+
+        </tr>
+
+        <tr class="border-bottom">
+            <td> </td>
+            <td> {{ portfolio_info["symbol"] }}</td>
+            <td> {{ portfolio_info["name"] }}</td>
+            <td> {{ portfolio_info["shares"] }}</td>
+            <td> {{ portfolio_info["stock_current_value"] }}</td>
+            <td> {{ portfolio_info["total_value"] }}</td>
+            <td></td>
+        </tr>
+
+        <tr class="border-bottom">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td> {{ portfolio_info["grand_total"] }} </td>
+
+        </tr>
+
+        <!-- portfolio_info[i] = {
+            "symbol": symbol, 
+            "name": company_name, 
+            "cash": balance, 
+            "shares": shares, 
+            "current_share_price":stock_current_value, 
+            "total_value": total_value, 
+            "grand_total": grand_total
+        } -->
+
+
+
+
+
+        <tr class="border-bottom">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+
+
+        <!-- <tr> 
+            <td> </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td> </td>
+        </tr> -->
+
+    </table>
+
+
+{% endblock %}
