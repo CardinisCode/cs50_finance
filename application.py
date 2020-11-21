@@ -12,6 +12,7 @@ from helpers import apology, login_required, lookup, usd
 from datetime import datetime, date
 
 from repo.user import UserRepository
+from repo.portfolio import PortfolioRepository
 
 # Configure application
 app = Flask(__name__)
@@ -39,6 +40,7 @@ Session(app)
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///finance.db")
 userRepo = UserRepository(db)
+portfolioRepo = PortfolioRepository(db)
 
 # Make sure API key is set
 if not os.environ.get("API_KEY"):
@@ -122,7 +124,7 @@ def buy():
 
         trans_date = date.today()
 
-        portfolio = db.execute("SELECT user_id, symbol, shares FROM portfolio WHERE user_id = :user_id and symbol = :symbol", user_id=user_id, symbol=symbol)
+        portfolio = portfolioRepo.getByUserIdAndSymbol(user_id, symbol)
         if len(portfolio) == 0:
             account_shares = 0
 
@@ -162,16 +164,16 @@ def buy():
 def sell():
     user_id = session["user_id"]
     if request.method == "GET":
-        rows = db.execute("SELECT * FROM portfolio WHERE user_id = :user_id", user_id=user_id)
+        stocks_owned = portfolioRepo.getByUserId(user_id)
 
         # Let's make sure the user actually owns any stocks
-        if len(rows) == 0:
+        if len(stocks_owned) == 0:
             return apology("You do not own stock yet at this point")
     
         # Let's grab every stock symbol in the user's portfolio and save it in a dictionary
         stocks_purchased = {}
-        for i in range(len(rows)):
-            stock_item = rows[i]
+        for i in range(len(stocks_owned)):
+            stock_item = stocks_owned[i]
             for key, value in stock_item.items():
                 if key == "symbol":
                     stocks_purchased[i] = value
@@ -195,14 +197,14 @@ def sell():
     rows = userRepo.getById(user_id)
     balance = float(rows[0]["cash"])
 
-    portfolio = db.execute("SELECT user_id, symbol, shares, name FROM portfolio WHERE user_id = :user_id and symbol = :symbol", user_id=user_id, symbol=symbol)
-    stock_details = portfolio[0]
+    current_share = portfolioRepo.getByUserIdAndSymbol(user_id, symbol)
+    stock_details = current_share[0]
     company_name = stock_details["name"]
     
     if shares > stock_details["shares"]:
-        return apology("You're buying more stocks than you own!")
+        return apology("You're selling more stocks than you own!")
 
-    updated_shares = shares - stock_details["shares"]
+    updated_shares = stock_details["shares"] - shares
     purchase_value = price * shares
     final_balance = balance + purchase_value
 
