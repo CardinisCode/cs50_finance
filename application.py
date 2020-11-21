@@ -11,6 +11,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology, login_required, lookup, usd
 from datetime import datetime, date
 
+from repo.user import UserRepository
+
 # Configure application
 app = Flask(__name__)
 
@@ -36,6 +38,7 @@ Session(app)
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///finance.db")
+userRepo = UserRepository(db)
 
 # Make sure API key is set
 if not os.environ.get("API_KEY"):
@@ -94,7 +97,7 @@ def buy():
         if shares == '':
             return apology(message="You have no specified how many shares you'd like to buy.")
         
-        elif int(purchased_shares) < 1: 
+        elif int(shares) < 1: 
             return apology(message="You cannot purchase less than 1 stock.")
 
         purchased_shares = int(shares)
@@ -107,7 +110,7 @@ def buy():
         purchase_value = price * int(purchased_shares)
         user_id = session["user_id"]
 
-        rows = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=user_id)
+        rows = userRepo.getById(user_id)
         balance = float(rows[0]["cash"])
 
         final_balance = balance - purchase_value
@@ -136,7 +139,7 @@ def buy():
             
         
         db.execute("INSERT INTO history (user_id, symbol, stock_price, purchase_value, date) VALUES (:user_id, :symbol, :price, :purchase_value, :date)", user_id=user_id, symbol=symbol, price=price, purchase_value=purchase_value, date=trans_date);
-        db.execute("UPDATE users SET cash = :balance WHERE id = :user_id", balance=final_balance, user_id=user_id);
+        userRepo.updateCashById(user_id, final_balance)
 
         stock_purchase_info = { 
             "symbol": symbol,
@@ -177,15 +180,38 @@ def sell():
 
     # Process POST request
     symbol = request.form.get("symbol")
-    shares = int(request.form.get("shares"))
+    shares = request.form.get("shares")
+    if not shares:
+        return apology("You have no provided any number of shares to sell.")
+
+    shares = int(shares)
+    if shares < 1: 
+        return apology("You cannot sell less than 1 stock.")
+
     stocks = lookup(symbol)
     price = float(stocks["price"])
+    trans_date = date.today()
 
-    rows = db.execute("SELECT * FROM users WHERE id = :user_id", user_id=user_id)
+    rows = userRepo.getById(user_id)
     balance = float(rows[0]["cash"])
 
-    portfolio = db.execute("SELECT user_id, symbol, shares FROM portfolio WHERE user_id = :user_id and symbol = :symbol", user_id=user_id, symbol=symbol)
-    # Grab the info needed: shares qty, symbol, name -> for loop through portfolio
+    portfolio = db.execute("SELECT user_id, symbol, shares, name FROM portfolio WHERE user_id = :user_id and symbol = :symbol", user_id=user_id, symbol=symbol)
+    stock_details = portfolio[0]
+    company_name = stock_details["name"]
+    
+    if shares > stock_details["shares"]:
+        return apology("You're buying more stocks than you own!")
+
+    updated_shares = shares - stock_details["shares"]
+    purchase_value = price * shares
+    final_balance = balance + purchase_value
+
+    if updated_shares == 0:
+        db.execute("DELETE FROM portfolio where symbol=:symbol and user_id=:user_id", symbol=symbol, user_id=user_id)
+    else:
+        result = db.execute("UPDATE portfolio SET shares = :shares WHERE user_id = :user_id AND symbol = :symbol", shares=updated_shares, user_id=user_id, symbol=symbol);
+
+
 
 
     return apology("TODO")
@@ -217,15 +243,14 @@ def login():
             return apology("must provide password", 403)
 
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = :username",
-                          username=request.form.get("username"))
+        user = userRepo.getByUserName(request.form.get("username"))
 
         # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], request.form.get("password")):
+        if user is None or not check_password_hash(user["hash"], request.form.get("password")):
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
+        session["user_id"] = user["id"]
 
         # Redirect user to home page
         return redirect("/")
@@ -303,23 +328,19 @@ def register():
             return apology("Your password and confirmation password do not match.", 403)
 
         # Let's check if the provided username already exist in our database
-        rows = db.execute("SELECT * FROM users WHERE username = :username", username=username)
-        if len(rows) != 0: 
+        user = userRepo.getByUserName(username)
+        if user:
             # This means this username already exists
             return apology("This username already exists.", 403)
-
 
         # We don't want to store the actual password so let's hash the password they provide
         hashed_password = generate_password_hash(password)
 
         # Now we have the hashed password, let's store the username and password in our database
-        db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", username=username, hash=hashed_password)
-
-        # Remember which user has logged in
-        rows = db.execute("SELECT * FROM users WHERE username = :username", username=username)
-        session["user_id"] = rows[0]["id"]
+        session["user_id"] = userRepo.createUser(username, hashed_password)
         return redirect("/")
 
+    # GET
     else:
         return render_template("register.html")
 

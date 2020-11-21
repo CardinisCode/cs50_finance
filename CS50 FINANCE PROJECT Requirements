@@ -179,11 +179,11 @@ CS50 FINANCE PROJECT
 		[X]	save share symbol & shares qty in variables
 		[X] create & save a lookup request using provided stock symbol
 			[X] Grab the stock's current value
-		[ ] Gather relevant info from users and portfolio
-			[ ] from 'users' table, Grab:
-				[ ] balance 
-			[ ]	From 'portfolio', Grab:
-				[ ]	all
+		[X] Gather relevant info from users and portfolio
+			[X] from 'users' table, Grab:
+				-> balance 
+			[X]	From 'portfolio', Grab:
+				->	shares
 
 
 		[ ]	Update the portfolio for this user: 
@@ -194,11 +194,11 @@ CS50 FINANCE PROJECT
 		[ ] Update user's balance after purchase
 
 
-	[ ] Handle errors (render Apology) if:
-		[ ]	User doesn't select a stock
-		[ ] User doesn't own any shares of that stock
-		[ ]	User input into shares is not a positive value
-		[ ]	User Input into shares is higher than the number of shares that user owns
+	[X] Handle errors (render Apology) if:
+		[X]	User doesn't select a stock
+		[X] User doesn't own any shares of that stock
+		[X]	User input into shares is not a positive value
+		[X]	User Input into shares is higher than the number of shares that user owns
 
 
 	[ ] Prepare info to displayed to user
