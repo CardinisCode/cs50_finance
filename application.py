@@ -57,36 +57,42 @@ def index():
     # Let's first grab the current user's personal info from 'users'
     user_id = session["user_id"]
     user = userRepo.getById(user_id)[0]
-    cash = round(float(user["cash"]), 2)
+    balance = round(float(user["cash"]), 2)
+    username = user["username"]
 
     users_portfolio = portfolioRepo.getByUserId(user_id)
 
     symbol = ""
-    balance = 0
     portfolio_info = {}
     purchase_id = 0
+    grand_total = balance
 
     for i in users_portfolio:
         if i["user_id"] == user_id:
             purchase_id += 1
             portfolio_info[purchase_id] = {}
+
             symbol = i["symbol"]
-            balance = cash
             shares = int(i["shares"])
             stock_current_value = int(lookup(symbol)["price"])
             total_value = round(stock_current_value * shares, 2)
+            grand_total += total_value
 
             portfolio_info[purchase_id] = {
-                "balance": usd(balance),
                 "symbol": symbol, 
                 "name": i["name"], 
                 "shares": shares, 
                 "stock_current_value": usd(stock_current_value), 
                 "total_value": usd(total_value), 
-                "grand_total": usd(balance + total_value)
             }
+    
+    user_info = {
+        "username": username,
+        "balance": usd(balance), 
+        "grand_total": usd(round(grand_total, 2))
+    }
 
-    return render_template("index.html", portfolio_info=portfolio_info)
+    return render_template("index.html", portfolio_info=portfolio_info, user_info=user_info)
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -163,7 +169,8 @@ def buy():
             "trans_type": trans_type
         }
 
-    return render_template("bought.html", web_data=stock_purchase_info)    
+    message = "Bought!"
+    return render_template("bought.html", web_data=stock_purchase_info, message=message)    
 
 
 @app.route("/sell", methods=["GET", "POST"])
@@ -238,10 +245,12 @@ def sell():
         "final": usd(final_balance),
         "date": str_date,
     }
-    return render_template("sold.html", web_data=stock_purchase_info)
+
+    message = "Sold!"
+    return render_template("sold.html", web_data=stock_purchase_info, message=message)
 
 
-@app.route("/history", methods=["GET", "POST"])
+@app.route("/history")
 @login_required
 def history():
     """Show history of transactions"""
@@ -273,6 +282,40 @@ def history():
         })
 
     return render_template("history.html", history=transaction_history)
+
+
+@app.route("/buy_credit", methods=["GET", "POST"])
+@login_required
+def add_credit():
+    """Display form to user"""
+    if request.method == "GET":
+        return render_template("buy_credit.html")
+
+    credit = request.form.get("credit")
+    if not credit: 
+        return apology("No cash value provided")
+
+    if int(credit) == 0:
+        return apology("You must provide a balance above $1.")
+
+    user_id = session["user_id"]
+    user_account = userRepo.getById(user_id)[0]
+    balance = float(user_account["cash"])
+    updated_balance = round(balance + float(credit), 2)
+    userRepo.updateCashById(user_id, updated_balance)
+    added_cash = usd(float(credit))
+
+    message = "You have successfully deposited " + added_cash
+
+    balance_display = {
+        "prior_balance": usd(balance), 
+        "added_cash": added_cash, 
+        "updated_cash_balance": usd(updated_balance),
+        "message": message
+    }
+
+    return render_template("updated_balance.html", balance_display=balance_display)
+
 
 
 
@@ -345,6 +388,31 @@ def quote():
         return render_template("quoted.html", web_data=stocks)
         
 
+def check_password(password):
+    error_message = ""
+    if len(password) < 6: 
+        error_message = "Your password should have at least 6 characters"
+        return (False, error_message)
+    
+    allowed_characters = ["!", "#", "$", "%", "^", "&", "*", "~"]
+    special_char_count = 0
+    number_count = 0
+    for i in password:
+        if i in allowed_characters:
+            special_char_count += 1
+        if int(i) >= 0 or int(i) < 10:
+            number_count += 1
+    
+    if special_char_count <= 0:
+        error_message = "You should have at least 1 special character in your password!"
+        return (False, error_message)
+
+    if number_count <= 0:
+        error_message = "You should have at least 1 number/digit in your password!"
+        return (False, error_message)
+
+    return True
+
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -357,10 +425,23 @@ def register():
         if not username:
             return apology("You must provide a username.", 403)
 
+        # Let's check if the provided username already exist in our database
+        user = userRepo.getByUserName(username)
+        if user:
+            # This means this username already exists
+            return apology("This username already exists.", 403)
+
+        # Grab password from User
         password = request.form.get("password")
         # Let's check that the password field is not empty
         if not password:
             return apology("You must provide a password.", 403)
+        
+        #Now let's make sure the password actually meets password requirements
+        valid_password = check_password(password)[0]
+        message = check_password(password)[1]
+        if valid_password == False:
+            return apology(message, 403)
 
         confirmation = request.form.get("confirmation")
         # Just to make sure the user has not left the confirm password field empty
@@ -371,11 +452,7 @@ def register():
         if confirmation != password:
             return apology("Your password and confirmation password do not match.", 403)
 
-        # Let's check if the provided username already exist in our database
-        user = userRepo.getByUserName(username)
-        if user:
-            # This means this username already exists
-            return apology("This username already exists.", 403)
+
 
         # We don't want to store the actual password so let's hash the password they provide
         hashed_password = generate_password_hash(password)

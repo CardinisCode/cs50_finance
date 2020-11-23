@@ -1,13 +1,17 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Register
+    Dashboard
 {% endblock %}
 
 {% block main %}
-    <h1> Your Stock Portfolio</h1>
+    <h1> Welcome {{ user_info.username }}  </h1>
+        <p> </p>
+
+    <br/>    
+    <h2> Your Stock Portfolio</h2>
         
-    <table class="center">
+    <table class="center"> 
         <tr class="border-bottom">
             <th> Current Balance</th>
             <th> Stock Symbol</th>
@@ -19,49 +23,37 @@
 
         </tr>
 
+        <tr class="border-bottom">
+            <td> {{ user_info.balance }}</td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
+        </tr>
+
         {% for key, value in portfolio_info.items() %}
             <tr class="border-bottom">
-                {% for key2, value2 in value.items() %}
-                    <td> {{value2 }} </td>
-                {% endfor %}
+                <td> </td>
+                <td> {{value.symbol}} </td>
+                <td> {{value.name}}</td>
+                <td> {{value.shares}}</td>
+                <td> {{value.stock_current_value}}</td>
+                <td> {{value.total_value}}</td>
+                <td> </td>
             </tr>
         {% endfor %}
         
-
-        <!-- portfolio_info[i] = {
-            "symbol": symbol, 
-            "name": company_name, 
-            "cash": balance, 
-            "shares": shares, 
-            "current_share_price":stock_current_value, 
-            "total_value": total_value, 
-            "grand_total": grand_total
-        } -->
-
-
-
-
-
         <tr class="border-bottom">
+            <td> </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
             <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td> </td>
+            <td> {{user_info.grand_total}} </td>
         </tr>
-
-
-
-        <!-- <tr> 
-            <td> </td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td> </td>
-        </tr> -->
 
     </table>
 

@@ -229,12 +229,20 @@ CS50 FINANCE PROJECT
 
 ------------------------------------------------------------------------------
 
-#7 [ ]	Personal Touch
-	[ ] Buy cash
-		[ ] Redirect users to add more credit if they're buying
-			more than what they own
-	[ ] password requirements
-		[ ] Min 6 characters 
-		[ ] Min 1 number
-		[ ] Min 1 symbol (%, #, *, &, ^, !)
+#7 [X]	Personal Touch
+	[X] Buy cash
+		[X] Create a template for "add_credit" 
+		[X] Create a template for "updated_credit" 
+		[X] Add a "add cash" route for both GET & POST
+	[X] password requirements
+		[X] Min 6 characters 
+		[X] Min 1 number
+		[X] Min 1 symbol (%, #, *, &, ^, !)
 
+------------------------------------------------------------------------------
+
+#8: [ ] Style tables
+
+
+#9: [ ] Fix Apology message
+		[X] Change the image! 

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Updated Cash
+{% endblock %}
+
+{% block main %}
+    <div class="alert alert-success" role="alert">
+        {{ balance_display.message }}
+    </div>
+        
+    <h1> Current Balance: </h1>
+    <p class="balance_update"> {{ balance_display.updated_cash_balance }} </p>
+
+    
+
+
+{% endblock %}
