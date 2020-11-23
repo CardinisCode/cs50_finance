@@ -25,8 +25,8 @@ CS50 FINANCE PROJECT
 		[x]	Make sure the username field isn't empty
 			[x]	If so: provide error message
 
-		[ ]	check username against DB
-			[ ]	Provide error if Username already exists in the DB
+		[X]	check username against DB
+			[X]	Provide error if Username already exists in the DB
 
 		[x]	Make sure the password field isn't empty
 			[x]	If empty: provide error message
@@ -69,7 +69,7 @@ CS50 FINANCE PROJECT
 	
 ------------------------------------------------------------------------------
 
-#3	[ ] Buy - Should allow user to buy stock of their choice
+#3	[X] Buy - Should allow user to buy stock of their choice
 		[x]	Templates
 			[X]	Create a "buy.html" template
 			[X]	Create a "bought.html" template
@@ -98,9 +98,9 @@ CS50 FINANCE PROJECT
 			[X]	Insert payment details into new table
 			[X] If user has stocks of that type
 				Insert the purchased stock into the user's portfolio
-					[ ]	shares
-					[ ]	symbol
-					[ ] company name
+					[X]	shares
+					[X]	symbol
+					[X] company name
 			[X]	If user already stocks of that type:
 				[X]	Update the amount of shares that user owns for that symbol
 
@@ -135,7 +135,7 @@ CS50 FINANCE PROJECT
 
 ------------------------------------------------------------------------------
 
-#4	[ ] Display a HTML table on INDEX summarising the user's stocks
+#4	[X] Display a HTML table on INDEX summarising the user's stocks
 		(For the current user logged in)
 
 		[X]	Grab info
@@ -241,8 +241,15 @@ CS50 FINANCE PROJECT
 
 ------------------------------------------------------------------------------
 
-#8: [ ] Style tables
+# For me: 
+#8: [ ] Clean up
+		[ ]	Style tables
+		[ ] Clean up sell into its own file 
+		[ ] password -> redirect back to register if there user's password doesnt meet requirements
+			[ ]	Also provide error message in banner
 
 
 #9: [ ] Fix Apology message
 		[X] Change the image! 
+
+

@@ -14,6 +14,8 @@ from datetime import datetime, date
 from repo.user import UserRepository
 from repo.portfolio import PortfolioRepository
 from repo.history import HistoryRepository
+from service.registration import post_register
+from service.buy import post_buy
 
 # Configure application
 app = Flask(__name__)
@@ -102,75 +104,8 @@ def buy():
     if request.method == "GET":
         return render_template("buy.html")
 
-    else:
-        """Buy shares of stock"""
-        symbol = request.form.get("symbol")
-        if symbol == '':
-            return apology(message="No stock symbol provided!")
-
-        shares = request.form.get("shares")
-        if shares == '':
-            return apology(message="You have no specified how many shares you'd like to buy.")
-        
-        elif int(shares) < 1: 
-            return apology(message="You cannot purchase less than 1 stock.")
-
-        purchased_shares = int(shares)
-        stocks = lookup(symbol)
-        if stocks == None:
-            return apology(message="Not a valid Stock symbol!")
-
-        price = float(stocks["price"])
-        company_name = stocks["name"]
-        purchase_value = price * int(purchased_shares)
-
-        # Let's grab the user's balance:
-        user_id = session["user_id"]
-        user_account = userRepo.getById(user_id)[0]
-        balance = float(user_account["cash"])
-
-        final_balance = balance - purchase_value
-        if final_balance < 0:
-            return apology("You do not have sufficient balance for this transaction.")
-
-        purchase_value = purchase_value * -1
-
-        trans_date = datetime.today()
-        str_date = trans_date.strftime('%Y-%m-%d-%X')
-        portfolio = portfolioRepo.getByUserIdAndSymbol(user_id, symbol)
-        if len(portfolio) == 0:
-            account_shares = 0
-
-        else:
-            account_shares = portfolio[0]["shares"]
-
-        shares = int(account_shares) + purchased_shares
-        trans_type = 'Bought'
-
-        if len(portfolio) > 0:
-            portfolioRepo.UpdateSharesbyUserIDAndSymbol(user_id, symbol, shares)
-        else:
-            portfolioRepo.InsertUserIdAndNameAndSymbolAndShares(user_id, company_name, symbol, shares)
-            
-        historyRepo.InsertTransactionDetails(user_id, symbol, price, purchase_value, str_date, purchased_shares, trans_type)
-        userRepo.updateCashById(user_id, final_balance)
-
-        stock_purchase_info = { 
-            "symbol": symbol,
-            "name": stocks["name"],
-            "shares" : purchased_shares, 
-            "price": usd(price), 
-            "purchase_value": usd(purchase_value), 
-            "id": session["user_id"],
-            "user_name": user_account["username"],
-            "balance": usd(balance),
-            "final": usd(final_balance),
-            "date": str_date,
-            "trans_type": trans_type
-        }
-
-    message = "Bought!"
-    return render_template("bought.html", web_data=stock_purchase_info, message=message)    
+    """Buy shares of stock"""
+    return post_buy(session, userRepo, portfolioRepo, historyRepo)
 
 
 @app.route("/sell", methods=["GET", "POST"])
@@ -388,78 +323,11 @@ def quote():
         return render_template("quoted.html", web_data=stocks)
         
 
-def check_password(password):
-    error_message = ""
-    if len(password) < 6: 
-        error_message = "Your password should have at least 6 characters"
-        return (False, error_message)
-    
-    allowed_characters = ["!", "#", "$", "%", "^", "&", "*", "~"]
-    special_char_count = 0
-    number_count = 0
-    for i in password:
-        if i in allowed_characters:
-            special_char_count += 1
-        if int(i) >= 0 or int(i) < 10:
-            number_count += 1
-    
-    if special_char_count <= 0:
-        error_message = "You should have at least 1 special character in your password!"
-        return (False, error_message)
-
-    if number_count <= 0:
-        error_message = "You should have at least 1 number/digit in your password!"
-        return (False, error_message)
-
-    return True
-
-
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         """Process a registration"""    
-
-        username = request.form.get("username")
-         # Let's check the username field is not empty
-        if not username:
-            return apology("You must provide a username.", 403)
-
-        # Let's check if the provided username already exist in our database
-        user = userRepo.getByUserName(username)
-        if user:
-            # This means this username already exists
-            return apology("This username already exists.", 403)
-
-        # Grab password from User
-        password = request.form.get("password")
-        # Let's check that the password field is not empty
-        if not password:
-            return apology("You must provide a password.", 403)
-        
-        #Now let's make sure the password actually meets password requirements
-        valid_password = check_password(password)[0]
-        message = check_password(password)[1]
-        if valid_password == False:
-            return apology(message, 403)
-
-        confirmation = request.form.get("confirmation")
-        # Just to make sure the user has not left the confirm password field empty
-        if not confirmation:
-            return apology("You must provide a confirmation password.", 403)
-        
-        # Now to check that if the confirmation password provided matches their provided (above) password
-        if confirmation != password:
-            return apology("Your password and confirmation password do not match.", 403)
-
-
-
-        # We don't want to store the actual password so let's hash the password they provide
-        hashed_password = generate_password_hash(password)
-
-        # Now we have the hashed password, let's store the username and password in our database
-        session["user_id"] = userRepo.createUser(username, hashed_password)
-        return redirect("/")
+        return post_register(session, userRepo)
 
     # GET
     else:
