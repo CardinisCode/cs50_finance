@@ -35,3 +35,5 @@ DELETE FROM  portfolio  where  id = 1;
 INSERT INTO portfolio (user_id, name, symbol, shares) VALUES (4, "Apple, Inc.", "AAPL", 2);
 
 DELETE FROM table_name WHERE condition;
+
+UPDATE users SET cash = :balance WHERE id = :user_id", balance=balance, user_id=user_id)

@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+    <h1> Purchase History</h1>
+        
+    <table class="center">
+        <tr class="border-bottom">
+            <th> </th>
+            <th> Stock Symbol</th>
+            <th> Stock Price</th>
+            <th> No. of Shares</th>
+            <th> Date</th>
+            <th> Type</th>
+
+        </tr>
+
+    {% for transaction in history %}
+        <tr class="border-bottom">
+            <td> {{ transaction.id }} </td>
+            <td> {{ transaction.symbol }} </td>
+            <td> {{ transaction.stock_price }} </td>
+            {% if (transaction.trans_type == 'Bought') == True %}
+                <td class="buy alert alert-success"> {{ transaction.shares }} </td>
+            {% else %}
+                <td class="sell alert alert-danger"> {{ transaction.shares }} </td>
+            {% endif %}
+            <td> {{ transaction.date }} </td>
+            <td> {{ transaction.trans_type }} </td>
+        </tr>
+    {% endfor %}
+
+    </table>
+
+
+{% endblock %}

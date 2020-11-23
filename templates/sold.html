@@ -1,50 +1,42 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Register
+    Sold
 {% endblock %}
 
 {% block main %}
     <div class="alert alert-success" role="alert">
-        Purchase successful!
+        Sale successful!
     </div>
         
     <table class="center">
         <tr class="border-bottom">
-            <th> Balance</th>
             <th> Date</th>
             <th> Stock Symbol</th>
             <th> Company Name</th>
             <th> No. of Shares</th>
             <th> Stock Price</th>
-            <th> Transaction Value</th>
-            <th> Grand total</th>
+            <th> Total</th>
         </tr>
         <tr class="border-bottom">
-            <td>{{ web_data.balance }}</td>
+            <td></td>
+            <td> CASH </td>
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
-            <td></td>
-            <td>  </td>
+            <td> {{ web_data.balance }} </td>
 
         <tr class="border-bottom">
-            <td></td>
             <td>{{ web_data.date }}</td>
             <td>{{ web_data.symbol }}</td>
             <td>{{ web_data.name }}</td>
             <td>{{ web_data.shares }}</td>
             <td>{{ web_data.price }}</td>
             <td>{{ web_data.purchase_value }}</td>
-            <td>  </td>
-            
         </tr>
 
         <tr> 
             <td> </td>
-            <td></td>
-            <td></td>
             <td></td>
             <td></td>
             <td></td>

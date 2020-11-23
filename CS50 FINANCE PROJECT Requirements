@@ -168,14 +168,14 @@ CS50 FINANCE PROJECT
 
 ------------------------------------------------------------------------------
 
-#5 [ ]	Sell (allows user to sell stocks that they currently own)
+#5 [X]	Sell (allows user to sell stocks that they currently own)
 	[X]	GET (FORM): 
 		[x]	symbol -> Select menu
 			-> Should include all the stocks that the user currently owns
 		[X] Shares -> input field
 		[X]	Sell -> submit Button
 
-	[ ]	POST
+	[X]	POST
 		[X]	save share symbol & shares qty in variables
 		[X] create & save a lookup request using provided stock symbol
 			[X] Grab the stock's current value
@@ -186,12 +186,12 @@ CS50 FINANCE PROJECT
 				->	shares
 
 
-		[ ]	Update the portfolio for this user: 
-			[ ]	Shares owned
-				[ ] If user sold all of their shares of their stock	
+		[X]	Update the portfolio for this user: 
+			[X]	Shares owned
+				[X] If user sold all of their shares of their stock	
 					->	delete that entry from the 'portfolio' table for that user
-		[ ]	Add the sale into the history table
-		[ ] Update user's balance after purchase
+		[X]	Add the sale into the history table
+		[X] Update user's balance after purchase
 
 
 	[X] Handle errors (render Apology) if:
@@ -201,17 +201,40 @@ CS50 FINANCE PROJECT
 		[X]	User Input into shares is higher than the number of shares that user owns
 
 
-	[ ] Prepare info to displayed to user
-		[ ] Create a template for "sold" 
-		[ ]	Copy data from "bought.html" & modify it accordingly
-		[ ]	Prepare dict for items to be displayed to the screen
-		[ ]	Create a banner to display "Sold"
+	[X] Prepare info to displayed to user
+		[X] Create a template for "sold" 
+		[X]	Copy data from "bought.html" & modify it accordingly
+		[X]	Prepare dict for items to be displayed to the screen
+		[X]	Create a banner to display "Sold"
 		
 
 
-	------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+
+#6 [X]	History
+	->	Display a html table that lists (row by row) all of the user's transactions 
+		[X] Include all buys and sells
+		[X] Make it clear if its a buy or sell
+			[X] Different colours for 'buy' and 'sell' transactions
+			[X] Set shares sold as -x
+		[X] Include:
+			[x]	Stock symbol
+			[X]	purchase/sale price
+			[X]	no. of shares bought/sold
+			[X] Date & time
+				(at which the transaction occurred)
+				[X]	Date YY-MM-DD
+				[X] Time 00:00:00
 
 
-#6 [ ]	History
+------------------------------------------------------------------------------
 
 #7 [ ]	Personal Touch
+	[ ] Buy cash
+		[ ] Redirect users to add more credit if they're buying
+			more than what they own
+	[ ] password requirements
+		[ ] Min 6 characters 
+		[ ] Min 1 number
+		[ ] Min 1 symbol (%, #, *, &, ^, !)
+

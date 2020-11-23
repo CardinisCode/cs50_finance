@@ -13,6 +13,7 @@ from datetime import datetime, date
 
 from repo.user import UserRepository
 from repo.portfolio import PortfolioRepository
+from repo.history import HistoryRepository
 
 # Configure application
 app = Flask(__name__)
@@ -41,6 +42,7 @@ Session(app)
 db = SQL("sqlite:///finance.db")
 userRepo = UserRepository(db)
 portfolioRepo = PortfolioRepository(db)
+historyRepo = HistoryRepository(db)
 
 # Make sure API key is set
 if not os.environ.get("API_KEY"):
@@ -54,7 +56,10 @@ def index():
 
     # Let's first grab the current user's personal info from 'users'
     user_id = session["user_id"]
-    users_portfolio = db.execute("SELECT user_id, name, symbol, cash, shares FROM portfolio INNER JOIN users ON users.id = portfolio.user_id WHERE user_id = :user_id", user_id=user_id)
+    user = userRepo.getById(user_id)[0]
+    cash = round(float(user["cash"]), 2)
+
+    users_portfolio = portfolioRepo.getByUserId(user_id)
 
     symbol = ""
     balance = 0
@@ -66,18 +71,20 @@ def index():
             purchase_id += 1
             portfolio_info[purchase_id] = {}
             symbol = i["symbol"]
-            balance = round(float(i["cash"]), 2)
+            balance = cash
             shares = int(i["shares"])
             stock_current_value = int(lookup(symbol)["price"])
             total_value = round(stock_current_value * shares, 2)
 
-            portfolio_info[purchase_id]["balance"] = usd(balance)
-            portfolio_info[purchase_id]["symbol"] = symbol
-            portfolio_info[purchase_id]["name"] = i["name"]
-            portfolio_info[purchase_id]["shares"] = shares
-            portfolio_info[purchase_id]["stock_current_value"] = usd(stock_current_value)
-            portfolio_info[purchase_id]["total_value"] = usd(total_value)
-            portfolio_info[purchase_id]["grand_total"] = usd(balance + total_value)
+            portfolio_info[purchase_id] = {
+                "balance": usd(balance),
+                "symbol": symbol, 
+                "name": i["name"], 
+                "shares": shares, 
+                "stock_current_value": usd(stock_current_value), 
+                "total_value": usd(total_value), 
+                "grand_total": usd(balance + total_value)
+            }
 
     return render_template("index.html", portfolio_info=portfolio_info)
 
@@ -110,20 +117,20 @@ def buy():
         price = float(stocks["price"])
         company_name = stocks["name"]
         purchase_value = price * int(purchased_shares)
-        user_id = session["user_id"]
 
-        rows = userRepo.getById(user_id)
-        balance = float(rows[0]["cash"])
+        # Let's grab the user's balance:
+        user_id = session["user_id"]
+        user_account = userRepo.getById(user_id)[0]
+        balance = float(user_account["cash"])
 
         final_balance = balance - purchase_value
-
         if final_balance < 0:
             return apology("You do not have sufficient balance for this transaction.")
 
-        purchase_value_str = "- " + str(usd(purchase_value))
+        purchase_value = purchase_value * -1
 
-        trans_date = date.today()
-
+        trans_date = datetime.today()
+        str_date = trans_date.strftime('%Y-%m-%d-%X')
         portfolio = portfolioRepo.getByUserIdAndSymbol(user_id, symbol)
         if len(portfolio) == 0:
             account_shares = 0
@@ -132,15 +139,14 @@ def buy():
             account_shares = portfolio[0]["shares"]
 
         shares = int(account_shares) + purchased_shares
+        trans_type = 'Bought'
 
         if len(portfolio) > 0:
-            result = db.execute("UPDATE portfolio SET shares = :shares WHERE user_id = :user_id AND symbol = :symbol", shares=shares, user_id=user_id, symbol=symbol);
-            # raise ValueError("here", result)
+            portfolioRepo.UpdateSharesbyUserIDAndSymbol(user_id, symbol, shares)
         else:
-            db.execute("INSERT INTO portfolio (user_id, name, symbol, shares) VALUES (:user_id, :name, :symbol, :shares)", user_id=user_id, name=company_name, symbol=symbol, shares=shares);
+            portfolioRepo.InsertUserIdAndNameAndSymbolAndShares(user_id, company_name, symbol, shares)
             
-        
-        db.execute("INSERT INTO history (user_id, symbol, stock_price, purchase_value, date) VALUES (:user_id, :symbol, :price, :purchase_value, :date)", user_id=user_id, symbol=symbol, price=price, purchase_value=purchase_value, date=trans_date);
+        historyRepo.InsertTransactionDetails(user_id, symbol, price, purchase_value, str_date, purchased_shares, trans_type)
         userRepo.updateCashById(user_id, final_balance)
 
         stock_purchase_info = { 
@@ -148,12 +154,13 @@ def buy():
             "name": stocks["name"],
             "shares" : purchased_shares, 
             "price": usd(price), 
-            "purchase_value": purchase_value_str, 
+            "purchase_value": usd(purchase_value), 
             "id": session["user_id"],
-            "user_name": rows[0]["username"],
+            "user_name": user_account["username"],
             "balance": usd(balance),
             "final": usd(final_balance),
-            "date": trans_date
+            "date": str_date,
+            "trans_type": trans_type
         }
 
     return render_template("bought.html", web_data=stock_purchase_info)    
@@ -192,7 +199,8 @@ def sell():
 
     stocks = lookup(symbol)
     price = float(stocks["price"])
-    trans_date = date.today()
+    trans_date = datetime.today()
+    str_date = trans_date.strftime('%Y-%m-%d-%X')
 
     rows = userRepo.getById(user_id)
     balance = float(rows[0]["cash"])
@@ -207,23 +215,67 @@ def sell():
     updated_shares = stock_details["shares"] - shares
     purchase_value = price * shares
     final_balance = balance + purchase_value
+    username = userRepo.getById(user_id)
 
     if updated_shares == 0:
-        db.execute("DELETE FROM portfolio where symbol=:symbol and user_id=:user_id", symbol=symbol, user_id=user_id)
+        portfolioRepo.DeleteByUserIdAndSymbol(user_id, symbol)
     else:
-        result = db.execute("UPDATE portfolio SET shares = :shares WHERE user_id = :user_id AND symbol = :symbol", shares=updated_shares, user_id=user_id, symbol=symbol);
+        portfolioRepo.UpdateSharesbyUserIDAndSymbol(user_id, symbol, updated_shares)
+    
+    trans_type = 'Sold'
+    historyRepo.InsertTransactionDetails(user_id, symbol, price, purchase_value, str_date, shares, trans_type)
+    userRepo.updateCashById(user_id, final_balance)
+
+    stock_purchase_info = { 
+        "symbol": symbol,
+        "name": company_name,
+        "shares" : shares, 
+        "price": usd(price), 
+        "purchase_value": usd(round(purchase_value, 2)), 
+        "id": user_id,
+        "user_name": username,
+        "balance": usd(balance),
+        "final": usd(final_balance),
+        "date": str_date,
+    }
+    return render_template("sold.html", web_data=stock_purchase_info)
 
 
-
-
-    return apology("TODO")
-
-
-@app.route("/history")
+@app.route("/history", methods=["GET", "POST"])
 @login_required
 def history():
     """Show history of transactions"""
-    return apology("TODO")
+    user_id = session["user_id"]
+    history = historyRepo.getTransactionHistoryByUserId(user_id)
+    if history == None:
+        return apology("This user has no history")
+
+    transaction_history = []
+    count = 0
+    for transaction in history: 
+        count += 1
+        symbol = history[count - 1]["symbol"]
+        price = usd(round(history[count - 1]["stock_price"], 2))
+        date = history[count - 1]["date"]
+        shares = history[count - 1]["shares"]
+        trans_type = history[count - 1]["trans_type"]
+
+        if trans_type == 'Sold':
+            shares *= -1
+
+        transaction_history.append({
+            "id": count,
+            "symbol": symbol, 
+            "stock_price": price, 
+            "shares": shares,
+            "date": date,
+            "trans_type": trans_type
+        })
+
+    return render_template("history.html", history=transaction_history)
+
+
+
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -295,16 +347,6 @@ def quote():
 
 
 
-
-@app.route("/quoted", methods=["GET", "POST"])
-@login_required
-def display_quote():
-    """Get stock quote."""
-
-    return apology("TODO")
-
-
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -345,10 +387,6 @@ def register():
     # GET
     else:
         return render_template("register.html")
-
-
-
-
 
 
 def errorhandler(e):
