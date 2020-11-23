@@ -8,7 +8,7 @@ def check_password(password):
     if len(password) < 6: 
         error_message = "Your password should have at least 6 characters"
         return (False, error_message)
-    
+
     allowed_characters = ["!", "#", "$", "%", "^", "&", "*", "~"]
     special_char_count = 0
     number_count = 0
@@ -18,7 +18,7 @@ def check_password(password):
         
         if i.isdigit():
             number_count += 1
-    
+
     if special_char_count <= 0:
         error_message = "You should have at least 1 special character in your password!"
         return (False, error_message)
@@ -47,7 +47,7 @@ def post_register(session, userRepo):
     # Let's check that the password field is not empty
     if not password:
         return apology("You must provide a password.", 403)
-    
+
     #Now let's make sure the password actually meets password requirements
     valid_password = check_password(password)[0]
     message = check_password(password)[1]
@@ -58,7 +58,7 @@ def post_register(session, userRepo):
     # Just to make sure the user has not left the confirm password field empty
     if not confirmation:
         return apology("You must provide a confirmation password.", 403)
-    
+
     # Now to check that if the confirmation password provided matches their provided (above) password
     if confirmation != password:
         return apology("Your password and confirmation password do not match.", 403)
