@@ -87,7 +87,7 @@ def index():
                 "stock_current_value": usd(stock_current_value), 
                 "total_value": usd(total_value), 
             }
-    
+
     user_info = {
         "username": username,
         "balance": usd(balance), 
@@ -118,7 +118,7 @@ def sell():
         # Let's make sure the user actually owns any stocks
         if len(stocks_owned) == 0:
             return apology("You do not own stock yet at this point")
-    
+
         # Let's grab every stock symbol in the user's portfolio and save it in a dictionary
         stocks_purchased = {}
         for i in range(len(stocks_owned)):
@@ -126,7 +126,7 @@ def sell():
             for key, value in stock_item.items():
                 if key == "symbol":
                     stocks_purchased[i] = value
-            #     
+     
         return render_template("sell.html", stocks_purchased=stocks_purchased)
 
     # Process POST request
@@ -150,7 +150,7 @@ def sell():
     current_share = portfolioRepo.getByUserIdAndSymbol(user_id, symbol)
     stock_details = current_share[0]
     company_name = stock_details["name"]
-    
+
     if shares > stock_details["shares"]:
         return apology("You're selling more stocks than you own!")
 
@@ -163,7 +163,7 @@ def sell():
         portfolioRepo.DeleteByUserIdAndSymbol(user_id, symbol)
     else:
         portfolioRepo.UpdateSharesbyUserIDAndSymbol(user_id, symbol, updated_shares)
-    
+
     trans_type = 'Sold'
     historyRepo.InsertTransactionDetails(user_id, symbol, price, purchase_value, str_date, shares, trans_type)
     userRepo.updateCashById(user_id, final_balance)
@@ -250,10 +250,6 @@ def add_credit():
     }
 
     return render_template("updated_balance.html", balance_display=balance_display)
-
-
-
-
 
 
 @app.route("/login", methods=["GET", "POST"])
