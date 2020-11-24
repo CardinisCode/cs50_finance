@@ -45,3 +45,48 @@ main img
     /* constrain images on small screens */
     max-width: 100%;
 }
+
+table, th, td 
+{
+    padding: 15px;
+}
+
+th {
+    background-color: rgb(235, 235, 235);
+}
+
+table {
+    border-spacing: 5px;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.centre_text {text-align: center;}
+
+td {
+    text-align: left;
+}
+
+tr.border-bottom
+{
+    border-bottom: 1pt solid rgb(230, 230, 230);
+}
+
+.successful
+{
+    width: 100%; 
+    background-color: rgb(230, 230, 230);
+    text-align: center;
+    size: 10em;
+}
+
+.balance_update 
+{
+    font-size: 40px;
+    color: green;
+}
+
+.left {text-align: left;}

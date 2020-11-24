@@ -9,7 +9,8 @@
         <p> </p>
 
     <br/>    
-    <h2> Your Stock Portfolio</h2>
+    <h2> Your Investment Portfolio</h2>
+    <br/>
         
     <table class="center"> 
         <tr class="border-bottom">
@@ -19,12 +20,12 @@
             <th> No. of Shares</th>
             <th> Current Stock Price</th>
             <th> Total Value</th>
-            <th> Grand Total</th>
+            <th> Investment Value</th>
 
         </tr>
 
         <tr class="border-bottom">
-            <td> {{ user_info.balance }}</td>
+            <td class="centre_text"> {{ user_info.balance }}</td>
             <td> </td>
             <td> </td>
             <td> </td>
@@ -36,11 +37,11 @@
         {% for key, value in portfolio_info.items() %}
             <tr class="border-bottom">
                 <td> </td>
-                <td> {{value.symbol}} </td>
+                <td class="centre_text"> {{value.symbol}} </td>
                 <td> {{value.name}}</td>
-                <td> {{value.shares}}</td>
-                <td> {{value.stock_current_value}}</td>
-                <td> {{value.total_value}}</td>
+                <td class="centre_text"> {{value.shares}}</td>
+                <td class="centre_text"> {{value.stock_current_value}}</td>
+                <td class="centre_text"> {{value.total_value}}</td>
                 <td> </td>
             </tr>
         {% endfor %}
@@ -52,7 +53,7 @@
             <td> </td>
             <td></td>
             <td> </td>
-            <td> {{user_info.grand_total}} </td>
+            <td class="centre_text"> {{user_info.grand_total}} </td>
         </tr>
 
     </table>

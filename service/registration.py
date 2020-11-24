@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, render_template
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology
 
@@ -32,6 +32,8 @@ def check_password(password):
 
 def post_register(session, userRepo):
     username = request.form.get("username")
+
+
     # Let's check the username field is not empty
     if not username:
         return apology("You must provide a username.", 403)

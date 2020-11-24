@@ -12,6 +12,12 @@ def post_buy(session, userRepo, portfolioRepo, historyRepo):
     shares = request.form.get("shares")
     if shares == '':
         return apology(message="You have no specified how many shares you'd like to buy.")
+
+    elif shares[0] == '-' and shares[1].isdigit() == True:
+        return apology(message="You cannot purchase less than 1 stock.")
+    
+    elif shares.isdigit() == False: 
+        return apology(message="You should provide a QTY of shares in numeric form EG 1")
     
     elif int(shares) < 1: 
         return apology(message="You cannot purchase less than 1 stock.")

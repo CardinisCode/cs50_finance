@@ -1,11 +1,12 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Register
+    Investment Quote
 {% endblock %}
 
 {% block main %}
-    <h1> Your Quote for {{ web_data.symbol }} </h1> 
+    <h1> Investment Quote </h1> 
+    <br/>
     
     <table class="center">
         <tr>
@@ -14,9 +15,9 @@
             <th> Stock Price</th>
 
         </tr>
-            <td>{{ web_data.symbol }}</td>
+            <td class="centre_text">{{ web_data.symbol }}</td>
             <td>{{ web_data.name }}</td>
-            <td>{{ web_data.price }}</td>
+            <td class="centre_text">{{ web_data.price }}</td>
         </tr>
     </table>
     

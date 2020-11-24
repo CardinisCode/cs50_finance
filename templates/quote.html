@@ -1,10 +1,12 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Register
+    Request Quote
 {% endblock %}
 
 {% block main %}
+    <h1> Request Quote</h1>
+    <br/>
     <form action="/quote" method="POST">
         <div class="form-group">
             <input autocomplete="off" autofocus class="form-control" name="symbol" placeholder="Stock Symbol" type="text">

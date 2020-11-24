@@ -4,12 +4,13 @@
     Register
 {% endblock %}
 
-{% block main %}
-    <h1> Stock Purchase Confirmation </h1>   
+{% block main %}   
     <div class="alert alert-success" role="alert">
         Purchase successful! {{ Message }}
     </div>
-        
+    <br/>
+    <h1> Stock Purchase Confirmation </h1>
+    <br/>  
     <table class="center">
         <tr class="border-bottom">
             <th> Balance</th>
@@ -19,7 +20,7 @@
             <th> No. of Shares</th>
             <th> Stock Price</th>
             <th> Transaction Value</th>
-            <th> Grand total</th>
+            <th> Final Balance</th>
         </tr>
         <tr class="border-bottom">
             <td>{{ web_data.balance }}</td>
@@ -32,12 +33,12 @@
 
         <tr class="border-bottom">
             <td></td>
-            <td>{{ web_data.date }}</td>
-            <td>{{ web_data.symbol }}</td>
+            <td class="centre_text">{{ web_data.date }}</td>
+            <td class="centre_text">{{ web_data.symbol }}</td>
             <td>{{ web_data.name }}</td>
-            <td>{{ web_data.shares }}</td>
-            <td>{{ web_data.price }}</td>
-            <td>{{ web_data.purchase_value }}</td>
+            <td class="centre_text">{{ web_data.shares }}</td>
+            <td class="centre_text">{{ web_data.price }}</td>
+            <td class="centre_text">{{ web_data.purchase_value }}</td>
             <td>  </td>
             
         </tr>
@@ -50,17 +51,8 @@
             <td></td>
             <td></td>
             <td></td>
-            <td> {{ web_data.final }} </td>
+            <td class="centre_text"> {{ web_data.final }} </td>
         </tr>
-
     </table>
-
-    <!-- "symbol": symbol,
-    "name": stocks["name"]
-    "shares" : shares, 
-    "price": price, 
-    "purchase_value": purchase_value, 
-    "id": session["user_id"] -->
-
 
 {% endblock %}

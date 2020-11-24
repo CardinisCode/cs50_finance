@@ -5,44 +5,53 @@
 {% endblock %}
 
 {% block main %}
-    <h1> Stock Sale Successful!</h1>
     <div class="alert alert-success" role="alert">
         Sale successful!
     </div>
-        
+    <br/>
+    <h1> Stock Sale Confirmation</h1>  
+    <br/>
     <table class="center">
         <tr class="border-bottom">
+            <th> Balance</th>
             <th> Date</th>
             <th> Stock Symbol</th>
             <th> Company Name</th>
             <th> No. of Shares</th>
-            <th> Stock Price</th>
-            <th> Total</th>
+            <th> Current Value</th>
+            <th> Transaction Value</th>
+            <th> Final Balance</th>
+        </tr>
+        <tr class="border-bottom">
+            <td class="centre_text">{{ web_data.balance }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
         </tr>
         <tr class="border-bottom">
             <td></td>
-            <td> CASH </td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td> {{ web_data.balance }} </td>
-
-        <tr class="border-bottom">
-            <td>{{ web_data.date }}</td>
-            <td>{{ web_data.symbol }}</td>
+            <td class="centre_text">{{ web_data.date }}</td>
+            <td class="centre_text">{{ web_data.symbol }}</td>
             <td>{{ web_data.name }}</td>
-            <td>{{ web_data.shares }}</td>
-            <td>{{ web_data.price }}</td>
-            <td>{{ web_data.purchase_value }}</td>
+            <td class="centre_text">{{ web_data.shares }}</td>
+            <td class="centre_text">{{ web_data.price }}</td>
+            <td class="centre_text">{{ web_data.purchase_value }}</td>
+            <td></td>
         </tr>
 
         <tr> 
+            <td> </td>
             <td> </td>
             <td></td>
             <td></td>
             <td></td>
             <td></td>
-            <td> {{ web_data.final }} </td>
+            <td></td>
+            <td class="centre_text"> {{ web_data.final }} </td>
         </tr>
 
     </table>

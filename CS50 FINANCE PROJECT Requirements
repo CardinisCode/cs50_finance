@@ -241,15 +241,20 @@ CS50 FINANCE PROJECT
 
 ------------------------------------------------------------------------------
 
+#8: [ ] Testing:
+		[X]	inputting alpabetical strings into forms when only numbers are expected,
+		[X] inputting zero or negative numbers into forms when only positive numbers are expected,
+		[ ]	inputting floating-point values into forms when only integers are expected,
+		[X]	trying to spend more cash than a user has,
+		[X]	trying to sell more shares than a user has,
+		[X]	inputting an invalid stock symbol, and
+		[X]	including potentially dangerous characters like ' and ; in SQL queries.
+
+------------------------------------------------------------------------------
+
 # For me: 
-#8: [ ] Clean up
-		[ ]	Style tables
-		[ ] Clean up sell into its own file 
-		[ ] password -> redirect back to register if there user's password doesnt meet requirements
-			[ ]	Also provide error message in banner
-
-
-#9: [ ] Fix Apology message
-		[X] Change the image! 
+#9: [X] Clean up
+		[X]	Style tables
+		[X] Clean up sell into its own file 
 
 
