@@ -1,15 +1,20 @@
 from flask import request, render_template
 from helpers import apology, lookup, usd
 
-def post_add_credit(session, userRepo):
-    credit = request.form.get("credit")
+
+def validate_credit_entry(credit):
+    valid = False
+    message = ""
+
     if not credit: 
-        return apology("No cash value provided")
+        message = "No Cash value provided!"
+        return (valid, message)
 
     elif credit[0] == '-' and credit[1].isdigit() == True:
-        return apology(message="You cannot purchase less than 1 stock.")
+        message = "You cannot purchase less than 1 stock."
+        return (valid, message)
 
-    # Temporary function to validate whether credit is indeed a float:
+    # Let's check whether/not credit is indeed a float:
     dot_count = 0
     int_count = 0
     for i in credit:
@@ -19,15 +24,22 @@ def post_add_credit(session, userRepo):
             int_count += 1
     
     if (dot_count + int_count) != len(credit):
-        return apology(message="Please provide your cash value in numeric form EG 1.00 or 1")
-            
-    # if credit_float. == False: 
-    #     return apology(message="Please provide your cash value in numeric form EG 1.00 or 1")
+        message = "Please provide your cash value in numeric form EG 1.00 or 1"
+        return (valid, message)
 
-    credit_float = float(credit)
+    if float(credit) < 1.0:
+        message = "You must provide a balance above $1."
+        return (valid, message)
+    
+    return (True, "")
 
-    if credit_float < 1.0:
-        return apology("You must provide a balance above $1.")
+
+def post_add_credit(session, userRepo):
+    credit = request.form.get("credit")
+    valid = validate_credit_entry(credit)[0]
+    message = validate_credit_entry(credit)[1]
+    if not valid:
+        return apology(message)
 
     user_id = session["user_id"]
     user_account = userRepo.getById(user_id)[0]
