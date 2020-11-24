@@ -5,6 +5,8 @@
 {% endblock %}
 
 {% block main %}
+    <h1> Register </h1>
+    <br/>
     <form action="/register" method="POST">
         <div class="form-group">
             <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text">
@@ -20,6 +22,16 @@
     </form>
 
     <br/>
+    <h2 class="left"> Requirements</h2>
+    <br/>
+    <p class="left"> Your Username should: </p>
+    <ul class="left">
+        <li> Have 6 characters or more </li>
+        <li> NOT start with a digit </li>
+        <li> At least 1 number: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10</li>
+    </ul>
+    <br/>
+
     <p class="left"> Your password should have: </p>
     <ul class="left"> 
         <li> 6 characters or more </li>

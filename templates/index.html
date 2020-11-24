@@ -14,29 +14,25 @@
         
     <table class="center"> 
         <tr class="border-bottom">
-            <th> Current Balance</th>
             <th> Stock Symbol</th>
             <th> Company Name</th>
             <th> No. of Shares</th>
             <th> Current Stock Price</th>
-            <th> Transaction Value</th>
+            <th> Total</th>
             <th> Investment Value</th>
-
         </tr>
 
         <tr class="border-bottom">
+            <td class="centre_text">CASH </td>
+            <td> </td>
+            <td> </td>
+            <td> </td>
             <td class="centre_text"> {{ user_info.balance }}</td>
-            <td> </td>
-            <td> </td>
-            <td> </td>
-            <td> </td>
-            <td> </td>
             <td> </td>
         </tr>
 
         {% for key, value in portfolio_info.items() %}
             <tr class="border-bottom">
-                <td> </td>
                 <td class="centre_text"> {{value.symbol}} </td>
                 <td> {{value.name}}</td>
                 <td class="centre_text"> {{value.shares}}</td>
@@ -50,10 +46,9 @@
             <td> </td>
             <td> </td>
             <td> </td>
-            <td> </td>
             <td></td>
             <td> </td>
-            <td class="centre_text"> {{user_info.grand_total}} </td>
+            <td class="centre_text bold"> {{user_info.grand_total}} </td>
         </tr>
 
     </table>

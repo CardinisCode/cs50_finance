@@ -13,27 +13,24 @@
     <br/>
     <table class="center">
         <tr class="border-bottom">
-            <th> Balance</th>
             <th> Date</th>
             <th> Stock Symbol</th>
             <th> Company Name</th>
             <th> No. of Shares</th>
             <th> Current Value</th>
-            <th> Transaction Value</th>
+            <th> Total</th>
             <th> Final Balance</th>
         </tr>
         <tr class="border-bottom">
+            <td>CASH</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
             <td class="centre_text">{{ web_data.balance }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
             <td></td>
         </tr>
         <tr class="border-bottom">
-            <td></td>
             <td class="centre_text">{{ web_data.date }}</td>
             <td class="centre_text">{{ web_data.symbol }}</td>
             <td>{{ web_data.name }}</td>
@@ -45,23 +42,14 @@
 
         <tr> 
             <td> </td>
-            <td> </td>
             <td></td>
             <td></td>
             <td></td>
             <td></td>
             <td></td>
-            <td class="centre_text"> {{ web_data.final }} </td>
+            <td class="centre_text bold"> {{ web_data.final }} </td>
         </tr>
 
     </table>
-
-    <!-- "symbol": symbol,
-    "name": stocks["name"]
-    "shares" : shares, 
-    "price": price, 
-    "purchase_value": purchase_value, 
-    "id": session["user_id"] -->
-
 
 {% endblock %}

@@ -1,4 +1,4 @@
-from flask import request, render_template
+from flask import request, render_template, redirect, flash
 from werkzeug.security import check_password_hash, generate_password_hash
 from helpers import apology
 
@@ -6,7 +6,8 @@ from helpers import apology
 def check_password(password):
     error_message = ""
     if len(password) < 6: 
-        error_message = "Your password should have at least 6 characters"
+       flash('You must provide a username.')
+        # error_message = "Your password should have at least 6 characters"
         return (False, error_message)
 
     allowed_characters = ["!", "#", "$", "%", "^", "&", "*", "~"]
@@ -30,25 +31,80 @@ def check_password(password):
     return (True, error_message)
 
 
-def post_register(session, userRepo):
-    username = request.form.get("username")
-
+def check_username(username, userRepo):
+    valid = False
+    # message = ""
 
     # Let's check the username field is not empty
     if not username:
-        return apology("You must provide a username.", 403)
+        flash('You must provide a username.')
+        return valid
+
+    # To check that username doesn't start with a digit
+    firstCharacter = username[0]
+    if ord(firstCharacter) >= 48 and ord(firstCharacter) <= 57:
+        flash('Invalid Username. Please check the requirements for the username.')
+    #     message = "Invalid Username. Please check the requirements for the username."
+        return valid
+
+    # To double check that the username actually includes alphabetical characters:
+    alpha_count = 0
+    number_count = 0
+    for i in username:
+        # Upper case alphabetical characters
+        if ord(i) >= 65 and ord(i) <= 90:
+            alpha_count += 1
+
+        # Lower case alphabetical characters
+        elif ord(i) >= 97 and ord(i) <= 122:
+            alpha_count += 1
+        
+        # Numbers / Digits
+        elif ord(i) >= 48 and ord(i) <= 57:
+            number_count += 1
+
+    if alpha_count < 3:
+        flash('Invalid Username. Please check the requirements for the username.')
+        return valid
+
+    if len(username) < 6: 
+        flash('Invalid Username. Please check the requirements for the username.')
+        return valid
+
+    if alpha_count == len(username):
+        flash('Invalid Username. Please check the requirements for the username.')
+        return valid
+
+    if (number_count + alpha_count) != len(username):
+        flash('Invalid Username. Please check the requirements for the username.')
+        return valid
 
     # Let's check if the provided username already exist in our database
     user = userRepo.getByUserName(username)
     if user:
         # This means this username already exists
-        return apology("This username already exists.", 403)
+        flash('This username already exists.')
+        return valid
+
+    return True
+
+    
+def post_register(session, userRepo):
+    username = request.form.get("username")
+    # valid, message = check_username(username, userRepo)
+    valid = check_username(username, userRepo)
+
+    if not valid:
+        return redirect("/register")
+
+    user = userRepo.getByUserName(username)
 
     # Grab password from User
     password = request.form.get("password")
     # Let's check that the password field is not empty
     if not password:
-        return apology("You must provide a password.", 403)
+        flash("You must provide a password.")
+        return redirect("/register")
 
     #Now let's make sure the password actually meets password requirements
     valid_password = check_password(password)[0]
@@ -64,8 +120,6 @@ def post_register(session, userRepo):
     # Now to check that if the confirmation password provided matches their provided (above) password
     if confirmation != password:
         return apology("Your password and confirmation password do not match.", 403)
-
-
 
     # We don't want to store the actual password so let's hash the password they provide
     hashed_password = generate_password_hash(password)
