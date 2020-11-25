@@ -4,11 +4,9 @@ from helpers import apology
 
 
 def check_password(password):
-    error_message = ""
     if len(password) < 6: 
-       flash('You must provide a username.')
-        # error_message = "Your password should have at least 6 characters"
-        return (False, error_message)
+        flash('Your password should have at least 6 characters')
+        return False
 
     allowed_characters = ["!", "#", "$", "%", "^", "&", "*", "~"]
     special_char_count = 0
@@ -21,19 +19,18 @@ def check_password(password):
             number_count += 1
 
     if special_char_count <= 0:
-        error_message = "You should have at least 1 special character in your password!"
-        return (False, error_message)
+        flash('You should have at least 1 special character in your password!')
+        return False
 
     if number_count <= 0:
-        error_message = "You should have at least 1 number/digit in your password!"
-        return (False, error_message)
+        flash('You should have at least 1 number/digit in your password!')
+        return False
 
-    return (True, error_message)
+    return True
 
 
 def check_username(username, userRepo):
     valid = False
-    # message = ""
 
     # Let's check the username field is not empty
     if not username:
@@ -91,7 +88,6 @@ def check_username(username, userRepo):
     
 def post_register(session, userRepo):
     username = request.form.get("username")
-    # valid, message = check_username(username, userRepo)
     valid = check_username(username, userRepo)
 
     if not valid:
@@ -107,23 +103,25 @@ def post_register(session, userRepo):
         return redirect("/register")
 
     #Now let's make sure the password actually meets password requirements
-    valid_password = check_password(password)[0]
-    message = check_password(password)[1]
+    valid_password = check_password(password)
     if valid_password == False:
-        return apology(message, 403)
+        return redirect("/register")
 
     confirmation = request.form.get("confirmation")
     # Just to make sure the user has not left the confirm password field empty
     if not confirmation:
-        return apology("You must provide a confirmation password.", 403)
+        flash('You must provide a confirmation password.')
+        return redirect("/register")
 
     # Now to check that if the confirmation password provided matches their provided (above) password
     if confirmation != password:
-        return apology("Your password and confirmation password do not match.", 403)
+        flash('Your password and confirmation password do not match.')
+        return redirect("/register")
 
     # We don't want to store the actual password so let's hash the password they provide
     hashed_password = generate_password_hash(password)
 
     # Now we have the hashed password, let's store the username and password in our database
     session["user_id"] = userRepo.createUser(username, hashed_password)
+    flash('Registration Complete!')
     return redirect("/")
